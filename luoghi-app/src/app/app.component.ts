@@ -19,6 +19,7 @@ export class AppComponent {
   searchControl = new FormControl('');
   suggestions: string[] = [];
   selectedLocation: any = null;
+  favorites: any[] = [];
 
   ngOnInit() {
     this.searchControl.valueChanges
@@ -30,7 +31,13 @@ export class AppComponent {
         this.suggestions = data;
       });
 
-      this.locationService.getFavorites().subscribe(favs => this.favorites = favs);
+    this.loadFavorites();
+  }
+
+  loadFavorites() {
+    this.locationService.getFavorites().subscribe(favs => {
+      this.favorites = favs;
+    });
   }
 
   forceSelection() {
@@ -45,30 +52,42 @@ export class AppComponent {
     }
   }
 
-  favorites: any[] = [];
-
   addToFavorites() {
-    if (this.selectedLocation) {
-      this.locationService.addFavorite(this.selectedLocation.raw).subscribe(() => {
-        // Ricarica la lista aggiornata dai preferiti dal backend
-        this.locationService.getFavorites().subscribe(favs => this.favorites = favs);
-      });
-    }
+    if (!this.selectedLocation) return;
+
+    // flatten the selected location data
+    const favToAdd = {
+      name: this.selectedLocation.name,
+      description: this.selectedLocation.description,
+      population: this.selectedLocation.raw.population,
+      lat: this.selectedLocation.raw.lat,
+      lon: this.selectedLocation.raw.lon,
+      note: this.selectedLocation.note || ''
+    };
+
+    this.locationService.addFavorite(favToAdd).subscribe(added => {
+      if (added) {
+        this.loadFavorites(); // reloads the list after adding
+      } else {
+        alert('Location already in favorites!');
+      }
+    });
   }
+
 
   removeFavorite(index: number) {
     this.locationService.deleteFavorite(index).subscribe(() => {
-      this.favorites.splice(index, 1);
+      this.loadFavorites(); //reloads the list after deletion
     });
   }
 
   editFavorite(index: number) {
     const updated = {
       ...this.favorites[index],
-      note: prompt("Aggiungi una nota:", this.favorites[index].note || '')
+      note: prompt("Add a note:", this.favorites[index].note || '')
     };
     this.locationService.updateFavorite(index, updated).subscribe(() => {
-      this.favorites[index] = updated;
+      this.loadFavorites(); // reloads the list after updating
     });
   }
 
@@ -87,6 +106,4 @@ export class AppComponent {
       alert('Please select a valid location from the suggestions.');
     }
   }
-
-
 }

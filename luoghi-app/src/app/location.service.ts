@@ -65,16 +65,18 @@ export class LocationService {
   // Add Favorites
   addFavorite(location: any): Observable<any> {
     const exists = this.favorites.some(
-      fav => fav.raw.name === location.raw.name && fav.raw.country === location.raw.country
+      fav => fav.name === location.name
     );
     if (!exists) {
       this.favorites.push(location);
       this.saveFavorites();
       return of(location);
     } else {
-      return of(null); 
+      return of(null);
     }
   }
+
+
 
   // Delete Favotites
   deleteFavorite(index: number): Observable<void> {

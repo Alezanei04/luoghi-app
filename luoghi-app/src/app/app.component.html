@@ -26,7 +26,7 @@
   <h2>Favorites</h2>
   <ul>
     <li *ngFor="let fav of favorites; index as i">
-      <strong>{{ fav.name }}, {{ fav.country }}</strong> –
+      <strong>{{ fav.name }}</strong> – 
       Population: {{ fav.population | number }}
       <br />
       Lat: {{ fav.lat }}, Lon: {{ fav.lon }}
