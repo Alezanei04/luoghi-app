@@ -1,0 +1,14 @@
+<div class="min-h-screen p-10 bg-gray-100">
+  <div class="max-w-xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Cerca un luogo</h1>
+    <input type="text" [formControl]="searchControl" (blur)="forceSelection()" list="suggestions" placeholder="Città o Stato..." class="w-full p-3 rounded-xl shadow" />
+    <datalist id="suggestions">
+      <option *ngFor="let suggestion of suggestions" [value]="suggestion"></option>
+    </datalist>
+
+    <div *ngIf="selectedLocation" class="result-box">
+      <h2 class="text-xl font-bold">{{ selectedLocation.name }}</h2>
+      <p>{{ selectedLocation.description }}</p>
+    </div>
+  </div>
+</div>
