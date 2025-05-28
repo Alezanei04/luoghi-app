@@ -49,8 +49,9 @@ export class AppComponent {
 
   addToFavorites() {
     if (this.selectedLocation) {
-      this.locationService.addFavorite(this.selectedLocation.raw).subscribe(fav => {
-        this.favorites.push(fav);
+      this.locationService.addFavorite(this.selectedLocation.raw).subscribe(() => {
+        // Ricarica la lista aggiornata dai preferiti dal backend
+        this.locationService.getFavorites().subscribe(favs => this.favorites = favs);
       });
     }
   }

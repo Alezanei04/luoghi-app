@@ -6,9 +6,26 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class LocationService {
   private username = 'alezanei04';
+  private favorites: any[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.loadFavorites();
+  }
 
+  // Loads Favorites from localStorage
+  private loadFavorites() {
+    const data = localStorage.getItem('favorites');
+    if (data) {
+      this.favorites = JSON.parse(data);
+    }
+  }
+
+  // Saves Favorites in localStorage
+  private saveFavorites() {
+    localStorage.setItem('favorites', JSON.stringify(this.favorites));
+  }
+
+  // Suggestions
   getSuggestions(query: string): Observable<string[]> {
     if (!query.trim()) return of([]);
     const url = `https://secure.geonames.org/searchJSON?q=${encodeURIComponent(query)}&maxRows=5&username=${this.username}`;
@@ -17,6 +34,7 @@ export class LocationService {
     );
   }
 
+  // Place Details
   getLocationDetails(location: string): Observable<any> {
     const [city] = location.split(',').map(s => s.trim());
     const url = `https://secure.geonames.org/searchJSON?q=${encodeURIComponent(city)}&maxRows=1&username=${this.username}`;
@@ -26,7 +44,7 @@ export class LocationService {
         const population = new Intl.NumberFormat('en-US').format(place.population);
         return {
           name: `${place.name}, ${place.countryName}`,
-          description: `Popolazione: ${population}, Lat: ${place.lat}, Lon: ${place.lng}`,
+          description: `Population: ${population}, Lat: ${place.lat}, Lon: ${place.lng}`,
           raw: {
             name: place.name,
             country: place.countryName,
@@ -39,34 +57,36 @@ export class LocationService {
     );
   }
 
-  private favorites: any[] = [];
-
+  // Obtain Favorites
   getFavorites(): Observable<any[]> {
     return of(this.favorites);
   }
 
+  // Add Favorites
   addFavorite(location: any): Observable<any> {
     const exists = this.favorites.some(
-      fav => fav.name === location.name && fav.country === location.country
+      fav => fav.raw.name === location.raw.name && fav.raw.country === location.raw.country
     );
     if (!exists) {
       this.favorites.push(location);
-      return of(location); // Simulated POST
+      this.saveFavorites();
+      return of(location);
     } else {
-      return of(null); // Nothing added
+      return of(null); 
     }
   }
 
-
+  // Delete Favotites
   deleteFavorite(index: number): Observable<void> {
     this.favorites.splice(index, 1);
-    return of(); // simulazione di DELETE
+    this.saveFavorites();
+    return of();
   }
 
+  // Update Favorites
   updateFavorite(index: number, updated: any): Observable<any> {
     this.favorites[index] = updated;
-    return of(updated); // simulazione di PUT/PATCH
+    this.saveFavorites();
+    return of(updated);
   }
-
-
 }

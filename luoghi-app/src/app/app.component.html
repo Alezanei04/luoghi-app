@@ -1,6 +1,5 @@
 <div class="min-h-screen p-10 bg-gray-100">
   <div class="max-w-xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6">Cerca un luogo</h1>
     <h1>Location Finder</h1>
 
     <input
@@ -14,19 +13,13 @@
     </datalist>
 
     <button (click)="searchLocation()">Search</button>
-
-
-    <div *ngIf="selectedLocation" class="result-box">
-      <h2 class="text-xl font-bold">{{ selectedLocation.name }}</h2>
-      <p>{{ selectedLocation.description }}</p>
-    </div>
   </div>
 </div>
 
 <div *ngIf="selectedLocation" class="result-box">
   <h2>{{ selectedLocation.name }}</h2>
   <p>{{ selectedLocation.description }}</p>
-  <button (click)="addToFavorites()">Add to Favorites</button>
+  <button class="btn" (click)="addToFavorites()">Add to Favorites</button>
 </div>
 
 <div class="result-box" *ngIf="favorites.length">
@@ -40,8 +33,8 @@
       <br />
       <em *ngIf="fav.note">Note: {{ fav.note }}</em>
       <br />
-      <button (click)="editFavorite(i)">Edit</button>
-      <button (click)="removeFavorite(i)">Delete</button>
+      <button class="btn" (click)="editFavorite(i)">Edit</button>
+      <button class="btn danger" (click)="removeFavorite(i)">Delete</button>
     </li>
   </ul>
 </div>
