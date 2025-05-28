@@ -55,24 +55,27 @@ export class AppComponent {
   addToFavorites() {
     if (!this.selectedLocation) return;
 
-    // flatten the selected location data
     const favToAdd = {
       name: this.selectedLocation.name,
       description: this.selectedLocation.description,
       population: this.selectedLocation.raw.population,
       lat: this.selectedLocation.raw.lat,
       lon: this.selectedLocation.raw.lon,
-      note: this.selectedLocation.note || ''
+      note: this.selectedLocation.note || '',
+      area: this.selectedLocation.area || null,
+      languages: this.selectedLocation.languages || '',
+      currency: this.selectedLocation.currency || ''
     };
 
     this.locationService.addFavorite(favToAdd).subscribe(added => {
       if (added) {
-        this.loadFavorites(); // reloads the list after adding
+        this.loadFavorites();
       } else {
         alert('Location already in favorites!');
       }
     });
   }
+
 
 
   removeFavorite(index: number) {
@@ -98,12 +101,18 @@ export class AppComponent {
     );
 
     if (match) {
-      this.locationService.getLocationDetails(match).subscribe(data => {
-        this.selectedLocation = data;
+      this.locationService.getLocationDetails(match).subscribe(locationData => {
+        this.selectedLocation = locationData;
+
+        // fetch country-level details
+        this.locationService.getCountryDetails(locationData.raw.country).subscribe(countryData => {
+          this.selectedLocation = {
+            ...this.selectedLocation,
+            ...countryData // merges area, languages, currency
+          };
+        });
       });
-    } else {
-      this.selectedLocation = null;
-      alert('Please select a valid location from the suggestions.');
     }
+
   }
 }

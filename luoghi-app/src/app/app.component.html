@@ -1,5 +1,5 @@
 <div class="min-h-screen p-10 bg-gray-100 flex justify-center items-center">
-  <div class="container max-w-xl bg-white p-8 rounded-lg shadow-lg text-center">
+  <div class="container w-full max-w-xl bg-white p-8 rounded-lg shadow-lg text-center">
     <h1 class="mb-6 text-3xl font-bold text-gray-800">Location Finder</h1>
 
     <input
@@ -20,40 +20,55 @@
       Search
     </button>
 
+    <!-- SEARCH RESULT BOX -->
     <div *ngIf="selectedLocation" class="result-box mb-6 p-4 border rounded bg-gray-50 text-left">
       <h2 class="text-xl font-semibold mb-2">{{ selectedLocation.name }}</h2>
       <p class="mb-3">{{ selectedLocation.description }}</p>
+      <p *ngIf="selectedLocation.population"><strong>Population:</strong> {{ selectedLocation.population | number }}</p>
+      <p *ngIf="selectedLocation.lat && selectedLocation.lon"><strong>Coordinates:</strong> {{ selectedLocation.lat }}, {{ selectedLocation.lon }}</p>
+      <p *ngIf="selectedLocation.area"><strong>Country Area:</strong> {{ selectedLocation.area | number }} km²</p>
+      <p *ngIf="selectedLocation.languages"><strong>Country Languages:</strong> {{ selectedLocation.languages }}</p>
+      <p *ngIf="selectedLocation.currency"><strong>Country Currency:</strong> {{ selectedLocation.currency }}</p>
+
       <button
-        class="btn bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+        class="btn bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition mt-4"
         (click)="addToFavorites()"
       >
         Add to Favorites
       </button>
     </div>
 
+    <!-- FAVORITES LIST -->
     <div class="result-box" *ngIf="favorites.length">
-      <h2 class="text-2xl font-semibold mb-4">Favorites</h2>
-      <ul class="text-left">
-        <li *ngFor="let fav of favorites; index as i" class="mb-4 border-b pb-2">
-          <strong>{{ fav.name }}</strong> – 
-          Population: {{ fav.population | number }}
-          <br />
-          Lat: {{ fav.lat }}, Lon: {{ fav.lon }}
-          <br />
-          <em *ngIf="fav.note">Note: {{ fav.note }}</em>
-          <br />
-          <button
-            class="btn bg-yellow-400 text-black px-3 py-1 rounded mr-2 hover:bg-yellow-500 transition"
-            (click)="editFavorite(i)"
-          >
-            Edit
-          </button>
-          <button
-            class="btn danger bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
-            (click)="removeFavorite(i)"
-          >
-            Delete
-          </button>
+      <h2 class="text-3xl font-bold mb-6 text-gray-900">Favorites</h2>
+
+      <ul class="grid gap-6 md:grid-cols-2">
+        <li
+          *ngFor="let fav of favorites; index as i"
+          class="p-4 rounded-lg shadow-md bg-white border border-gray-200"
+        >
+          <h3 class="text-xl font-bold text-gray-800 mb-2">{{ fav.name }}</h3>
+          <p><strong>Population:</strong> {{ fav.population | number }}</p>
+          <p><strong>Coordinates:</strong> {{ fav.lat }}, {{ fav.lon }}</p>
+          <p *ngIf="fav.area"><strong>Country Area:</strong> {{ fav.area | number }} km²</p>
+          <p *ngIf="fav.languages"><strong>Country Languages:</strong> {{ fav.languages }}</p>
+          <p *ngIf="fav.currency"><strong>Country Currency:</strong> {{ fav.currency }}</p>
+          <p *ngIf="fav.note"><em>Note: {{ fav.note }}</em></p>
+
+          <div class="mt-4 flex flex-wrap gap-2">
+            <button
+              class="btn bg-yellow-400 text-black px-3 py-1 rounded hover:bg-yellow-500 transition"
+              (click)="editFavorite(i)"
+            >
+              Edit
+            </button>
+            <button
+              class="btn danger bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+              (click)="removeFavorite(i)"
+            >
+              Delete
+            </button>
+          </div>
         </li>
       </ul>
     </div>

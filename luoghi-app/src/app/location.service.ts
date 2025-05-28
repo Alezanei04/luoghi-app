@@ -91,4 +91,22 @@ export class LocationService {
     this.saveFavorites();
     return of(updated);
   }
+
+  getCountryDetails(countryName: string): Observable<any> {
+    const url = `https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}?fullText=true`;
+
+    return this.http.get<any[]>(url).pipe(
+      map(data => {
+        const country = data[0];
+        return {
+          area: country.area, // superficie in km²
+          languages: Object.values(country.languages || {}).join(', '),
+          currency: Object.values(country.currencies || {})
+            .map((c: any) => `${c.name} (${c.symbol})`)
+            .join(', ')
+        };
+      })
+    );
+  }
+
 }
