@@ -1,10 +1,20 @@
 <div class="min-h-screen p-10 bg-gray-100">
   <div class="max-w-xl mx-auto">
     <h1 class="text-3xl font-bold mb-6">Cerca un luogo</h1>
-    <input type="text" [formControl]="searchControl" (blur)="forceSelection()" list="suggestions" placeholder="Città o Stato..." class="w-full p-3 rounded-xl shadow" />
-    <datalist id="suggestions">
+    <h1>Location Finder</h1>
+
+    <input
+      type="text"
+      placeholder="Enter a location..."
+      [formControl]="searchControl"
+      list="location-suggestions"
+    />
+    <datalist id="location-suggestions">
       <option *ngFor="let suggestion of suggestions" [value]="suggestion"></option>
     </datalist>
+
+    <button (click)="searchLocation()">Search</button>
+
 
     <div *ngIf="selectedLocation" class="result-box">
       <h2 class="text-xl font-bold">{{ selectedLocation.name }}</h2>
@@ -12,3 +22,27 @@
     </div>
   </div>
 </div>
+
+<div *ngIf="selectedLocation" class="result-box">
+  <h2>{{ selectedLocation.name }}</h2>
+  <p>{{ selectedLocation.description }}</p>
+  <button (click)="addToFavorites()">Add to Favorites</button>
+</div>
+
+<div class="result-box" *ngIf="favorites.length">
+  <h2>Favorites</h2>
+  <ul>
+    <li *ngFor="let fav of favorites; index as i">
+      <strong>{{ fav.name }}, {{ fav.country }}</strong> –
+      Population: {{ fav.population | number }}
+      <br />
+      Lat: {{ fav.lat }}, Lon: {{ fav.lon }}
+      <br />
+      <em *ngIf="fav.note">Note: {{ fav.note }}</em>
+      <br />
+      <button (click)="editFavorite(i)">Edit</button>
+      <button (click)="removeFavorite(i)">Delete</button>
+    </li>
+  </ul>
+</div>
+

@@ -23,11 +23,50 @@ export class LocationService {
     return this.http.get<any>(url).pipe(
       map(res => {
         const place = res.geonames[0];
+        const population = new Intl.NumberFormat('en-US').format(place.population);
         return {
           name: `${place.name}, ${place.countryName}`,
-          description: `Popolazione: ${place.population}, Lat: ${place.lat}, Lon: ${place.lng}`
+          description: `Popolazione: ${population}, Lat: ${place.lat}, Lon: ${place.lng}`,
+          raw: {
+            name: place.name,
+            country: place.countryName,
+            lat: place.lat,
+            lon: place.lng,
+            population: place.population
+          }
         };
       })
     );
   }
+
+  private favorites: any[] = [];
+
+  getFavorites(): Observable<any[]> {
+    return of(this.favorites);
+  }
+
+  addFavorite(location: any): Observable<any> {
+    const exists = this.favorites.some(
+      fav => fav.name === location.name && fav.country === location.country
+    );
+    if (!exists) {
+      this.favorites.push(location);
+      return of(location); // Simulated POST
+    } else {
+      return of(null); // Nothing added
+    }
+  }
+
+
+  deleteFavorite(index: number): Observable<void> {
+    this.favorites.splice(index, 1);
+    return of(); // simulazione di DELETE
+  }
+
+  updateFavorite(index: number, updated: any): Observable<any> {
+    this.favorites[index] = updated;
+    return of(updated); // simulazione di PUT/PATCH
+  }
+
+
 }

@@ -29,6 +29,8 @@ export class AppComponent {
       .subscribe(data => {
         this.suggestions = data;
       });
+
+      this.locationService.getFavorites().subscribe(favs => this.favorites = favs);
   }
 
   forceSelection() {
@@ -42,4 +44,48 @@ export class AppComponent {
       this.searchControl.setValue('');
     }
   }
+
+  favorites: any[] = [];
+
+  addToFavorites() {
+    if (this.selectedLocation) {
+      this.locationService.addFavorite(this.selectedLocation.raw).subscribe(fav => {
+        this.favorites.push(fav);
+      });
+    }
+  }
+
+  removeFavorite(index: number) {
+    this.locationService.deleteFavorite(index).subscribe(() => {
+      this.favorites.splice(index, 1);
+    });
+  }
+
+  editFavorite(index: number) {
+    const updated = {
+      ...this.favorites[index],
+      note: prompt("Aggiungi una nota:", this.favorites[index].note || '')
+    };
+    this.locationService.updateFavorite(index, updated).subscribe(() => {
+      this.favorites[index] = updated;
+    });
+  }
+
+  searchLocation() {
+    const input = this.searchControl.value?.trim();
+    const match = this.suggestions.find(
+      s => s.toLowerCase() === input?.toLowerCase()
+    );
+
+    if (match) {
+      this.locationService.getLocationDetails(match).subscribe(data => {
+        this.selectedLocation = data;
+      });
+    } else {
+      this.selectedLocation = null;
+      alert('Please select a valid location from the suggestions.');
+    }
+  }
+
+
 }
